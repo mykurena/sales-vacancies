@@ -1,0 +1,7 @@
+pandas
+numpy
+faker
+pyarrow
+python-dotenv
+google-cloud-bigquery
+db-dtypes

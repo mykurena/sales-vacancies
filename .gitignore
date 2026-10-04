@@ -1,0 +1,14 @@
+# Secrets
+.env
+service-account*.json
+
+# Generated data (regenerate with the scripts)
+data/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# OS / sync
+desktop.ini
