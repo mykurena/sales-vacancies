@@ -1,0 +1,74 @@
+{
+  "name": "sales-vacancies validation alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "validation-results",
+        "options": {}
+      },
+      "id": "b1c2d3e4-0001-4000-8000-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "validation-results"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b1c2d3e4-0002-4000-8000-000000000002",
+              "leftValue": "={{ $json.body.failed }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b1c2d3e4-0003-4000-8000-000000000003",
+      "name": "Any check failed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_WITH_YOUR_CHAT_ID",
+        "text": "=⚠️ Data validation failed ({{ $json.body.project }})\n\n{{ $json.body.failed }} of {{ $json.body.total }} checks failed (run status: {{ $json.body.status }}).\n\n{{ $json.body.failures.slice(0, 10).map(f => '• ' + f.check_name + ': ' + (f.check_type === 'error' ? f.description : 'expected ' + f.expected + ', got ' + f.actual)).join('\\n') }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "b1c2d3e4-0004-4000-8000-000000000004",
+      "name": "Send Telegram alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [480, -80]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Any check failed?", "type": "main", "index": 0 }]]
+    },
+    "Any check failed?": {
+      "main": [[{ "node": "Send Telegram alert", "type": "main", "index": 0 }], []]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
